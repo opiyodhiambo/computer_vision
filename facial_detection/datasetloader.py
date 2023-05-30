@@ -1,64 +1,107 @@
-import h5py
+import cv2
+import os
+import matplotlib.pyplot as plt
 import numpy as np
+import tensorflow as tf
+import time
+import h5py
 import sys
 import glob
-import tensorflow as tf #The main deep learning library
 
-class TrainingDatasetLoader(tf.keras.utils.Sequence): # Allows the class to be used as a data generator for training models 
-    def __init__(self,data_path, batch_size=200, training=True):
-        
-        # Accessing the path to the data
-        print(f"Opening {data_path}")
-        sys.stdout.flush() # Ensures that the message is immediately printed in the console
-        self.cache = h5py.File(data_path, "r") # Openning the HDF5 file in read only mode
-        
-        # Loading the dataset
-        print("Loading data...")
+IM_SHAPE = (64, 64, 3)
+
+def plot_image_prediction(i, predictions_array, true_label, img):
+  predictions_array, true_label, img = predictions_array[i], true_label[i], img[i]
+  plt.grid(False)
+  plt.xticks([])
+  plt.yticks([])
+
+  plt.imshow(np.squeeze(img), cmap=plt.cm.binary)
+
+  predicted_label = np.argmax(predictions_array)
+  if predicted_label == true_label:
+    color = 'blue'
+  else:
+    color = 'red'
+
+  plt.xlabel("{} {:2.0f}% ({})".format(predicted_label,
+                                100*np.max(predictions_array),
+                                true_label),
+                                color=color)
+
+def plot_value_prediction(i, predictions_array, true_label):
+  predictions_array, true_label = predictions_array[i], true_label[i]
+  plt.grid(False)
+  plt.xticks([])
+  plt.yticks([])
+  thisplot = plt.bar(range(10), predictions_array, color="#777777")
+  plt.ylim([0, 1])
+  predicted_label = np.argmax(predictions_array)
+
+  thisplot[predicted_label].set_color('red')
+  thisplot[true_label].set_color('blue')
+
+
+class TrainingDatasetLoader(object):
+    def __init__(self, data_path):
+
+        print ("Opening {}".format(data_path))
         sys.stdout.flush()
-        self.images = self.cache["images"][:]
-        self.labels = self.cache['labels'][:].astype(np.float32) # Convert the labels into float32 type
-        self.image_dims = self.images.shape # Assigning the shape of the loaded images
-        
-        # Creating the index arrays for the negative and positive samples
-        train_inds = np.arange(len(self.images))
-        pos_train_inds = train_inds[self.labels[train_inds, 0] == 1.0] # Contain indices where the labels are 1
-        neg_train_inds = train_inds[self.labels[train_inds, 0] != 1.0] # Contain indices where the labels are not 1
-        
-        # Splitting the positive and negative indices into a 80:20 ratio for training:non-training
-        if training: # During training, assign 80% of the pos and neg indices
-            self.pos_train_inds = pos_train_inds[:int(.8 * len(pos_train_inds))]
-            self.neg_train_inds = neg_train_inds[:int(.8 * len(neg_train_inds))]
-        else: # During training, assign 20% of the pos and neg indices
-            self.pos_train_inds = pos_train_inds[-1 * int(.2 * len(pos_train_inds))]
-            self.neg_train_inds = neg_train_inds[-1 * int(.2 * len(neg_train_inds))]
-        
-        # Randomizing the training samples in each epoch
-        np.random.shuffle(self.pos_train_inds)
-        np.random.shuffle(self.neg_train_inds)
-        
-        self.train_inds = np.concatenate ((self.pos_train_inds, self.neg_train_inds))
-        self.train_batch_size = batch_size
-        self.p_pos = np.ones(self.pos_train_inds.shape) / len(self.pos_train_inds)
-        
-    def get_batch(self, batch_size):
-        selected_pos_inds = np.random.choice(self.pos_train_inds, size=batch_size // 2, replace=False, p=self.p_pos) # Ensures an equal number of positive samples in the batch
-        selected_neg_inds = np.random.choice(self.neg_train_inds, size=batch_size // 2, replace=False) # Ensures an equal number of negative samples in the batch
-        selected_inds = np.concatenate((selected_pos_inds, selected_neg_inds)) # concatenates the selected positive and negative indices into a single array
-        
-        sorted_inds = np.sort(selected_inds).flatten() # Sorts the selected indices in ascending order
-        sorted_inds = sorted_inds.astype(int) 
-        train_img = (self.images[sorted_inds] / 255.0).astype(np.float32) # Normalizing the images
-        train_label = (self.labels[sorted_inds]).astype(np.float32)
-        
-        return train_img, train_label
-        
+
+        self.cache = h5py.File(data_path, 'r')
+
+        print ("Loading data into memory...")
+        sys.stdout.flush()
+        self.images = self.cache['images'][:]
+        self.labels = self.cache['labels'][:].astype(np.float32)
+        self.image_dims = self.images.shape
+        n_train_samples = self.image_dims[0]
+
+        self.train_inds = np.random.permutation(np.arange(n_train_samples))
+
+        self.pos_train_inds = self.train_inds[ self.labels[self.train_inds, 0] == 1.0 ]
+        self.neg_train_inds = self.train_inds[ self.labels[self.train_inds, 0] != 1.0 ]
+
     def get_train_size(self):
-        return len(self.train_inds)
-    
+        return self.train_inds.shape[0]
+
+    def get_train_steps_per_epoch(self, batch_size, factor=10):
+        return self.get_train_size()//factor//batch_size
+
+    def get_batch(self, n, only_faces=False, p_pos=None, p_neg=None, return_inds=False):
+        if only_faces:
+            selected_inds = np.random.choice(self.pos_train_inds, size=n, replace=False, p=p_pos)
+        else:
+            selected_pos_inds = np.random.choice(self.pos_train_inds, size=n//2, replace=False, p=p_pos)
+            selected_neg_inds = np.random.choice(self.neg_train_inds, size=n//2, replace=False, p=p_neg)
+            selected_inds = np.concatenate((selected_pos_inds, selected_neg_inds))
+
+        sorted_inds = np.sort(selected_inds)
+        train_img = (self.images[sorted_inds,:,:,::-1]/255.).astype(np.float32)
+        train_label = self.labels[sorted_inds,...]
+        return (train_img, train_label, sorted_inds) if return_inds else (train_img, train_label)
+
+    def get_n_most_prob_faces(self, prob, n):
+        idx = np.argsort(prob)[::-1]
+        most_prob_inds = self.pos_train_inds[idx[:10*n:10]]
+        return (self.images[most_prob_inds,...]/255.).astype(np.float32)
+
     def get_all_train_faces(self):
-        return self.images[self.pos_train_inds] # Retrieve the training faces using the training indices
-        
-        
-        
-    
-    
+        return self.images[ self.pos_train_inds ]
+
+
+def get_test_faces():
+    cwd = os.path.dirname(__file__)
+    images = {
+        "LF": [],
+        "LM": [],
+        "DF": [],
+        "DM": []
+    }
+    for key in images.keys():
+        files = glob.glob(os.path.join(cwd, "data", "faces", key, "*.png"))
+        for file in sorted(files):
+            image = cv2.resize(cv2.imread(file), (64,64))[:,:,::-1]/255.
+            images[key].append(image)
+
+    return images["LF"], images["LM"], images["DF"], images["DM"]
