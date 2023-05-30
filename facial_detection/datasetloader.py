@@ -56,10 +56,8 @@ class TrainingDatasetLoader(tf.keras.utils.Sequence): # Allows the class to be u
         return len(self.train_inds)
     
     def get_all_train_faces(self):
-        train_faces = self.images[self.pos_train_inds] # Retrieve the training faces using the training indices
-        train_faces = train_faces.astype(np.float32) / 255.0 # Normalize the training faces 
-        return train_faces 
-    
+        return self.images[self.pos_train_inds] # Retrieve the training faces using the training indices
+        
         
         
     
