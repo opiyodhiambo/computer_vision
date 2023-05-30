@@ -21,7 +21,7 @@ class TrainingDatasetLoader(tf.keras.utils.Sequence): # Allows the class to be u
         
         # Creating the index arrays for the negative and positive samples
         train_inds = np.arange(len(self.images))
-        self.pos_train_inds = train_inds[self.labels[train_inds, 0] == 1.0] # Contain indices where the labels are 1
+        pos_train_inds = train_inds[self.labels[train_inds, 0] == 1.0] # Contain indices where the labels are 1
         neg_train_inds = train_inds[self.labels[train_inds, 0] != 1.0] # Contain indices where the labels are not 1
         
         # Splitting the positive and negative indices into a 80:20 ratio for training:non-training
@@ -40,6 +40,14 @@ class TrainingDatasetLoader(tf.keras.utils.Sequence): # Allows the class to be u
         self.train_batch_size = batch_size
         self.p_pos = np.ones(self.pos_train_inds.shape) / len(self.pos_train_inds)
         
+               
+    def get_train_size(self):
+        return len(self.train_inds)
+    
+    def get_all_train_faces(self):
+        return self.images[self.pos_train_inds] # Retrieve the training faces using the training indices
+        
+        
     def get_batch(self, batch_size):
         selected_pos_inds = np.random.choice(self.pos_train_inds, size=batch_size // 2, replace=False, p=self.p_pos) # Ensures an equal number of positive samples in the batch
         selected_neg_inds = np.random.choice(self.neg_train_inds, size=batch_size // 2, replace=False) # Ensures an equal number of negative samples in the batch
@@ -51,13 +59,7 @@ class TrainingDatasetLoader(tf.keras.utils.Sequence): # Allows the class to be u
         train_label = (self.labels[sorted_inds]).astype(np.float32)
         
         return train_img, train_label
-        
-    def get_train_size(self):
-        return len(self.train_inds)
-    
-    def get_all_train_faces(self):
-        return self.images[self.pos_train_inds] # Retrieve the training faces using the training indices
-        
+ 
         
         
     
