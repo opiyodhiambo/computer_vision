@@ -3,6 +3,9 @@ import numpy as np
 import sys
 import glob
 import tensorflow as tf #The main deep learning library
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
 
 class TrainingDatasetLoader(tf.keras.utils.Sequence): # Allows the class to be used as a data generator for training models 
     def __init__(self,data_path, batch_size=200, training=True):

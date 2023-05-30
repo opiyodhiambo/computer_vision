@@ -4,7 +4,7 @@ from IPython import display as ipythondisplay
 import matplotlib.pyplot as plt
 
 # Plots a sample input and the corresponding reconstruction from the VAE Model 
-def plot_sample(x, y, vae):
+# def plot_sample(x, y, vae):
     
 
 
