@@ -3,6 +3,12 @@ import numpy as np
 from IPython import display as ipythondisplay
 import matplotlib.pyplot as plt
 
+# Plots a sample input and the corresponding reconstruction from the VAE Model 
+def plot_sample(x, y, vae):
+    
+
+
+
 # LossHistory: Used to track the  evolution of the loss during training
 class LossHistory: 
     def __init__(self,smoothing_factor=0.0): # No smoothing applied in the data. Each loss appended to the list without any smoothing calculations
