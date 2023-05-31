@@ -4,7 +4,19 @@ from IPython import display as ipythondisplay
 import matplotlib.pyplot as plt
 
 # Plots a sample input and the corresponding reconstruction from the VAE Model 
-# def plot_sample(x, y, vae):
+def plot_sample(x, y, vae):
+    plt.figure(figsize=(2,1))
+    plt.subplot(1, 2, 1)
+    idx = np.where(y==1)[0][0] # Finds the first instance where the y is equal to 1
+    plt.imshow(x[idx]) # Displays the image at the `idx` index from the `x` input  data
+    plt.grid(True)
+    plt.subplot(1, 2, 2) # Plots a new subplot within the figure 
+    _, _, _, recon = vae(x) # Calls the vae function to reconstruct the output while ignoring all other outputs (_, _, _, _, _, _, _, _, _)
+    recon = np.clip(recon, 0, 1) # Limits the values between 0 and 1
+    plt.imshow(recon[idx])
+    plt.grid(True)
+    
+    plt.show()
     
 
 
