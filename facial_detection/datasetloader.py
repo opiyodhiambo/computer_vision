@@ -51,19 +51,20 @@ class TrainingDatasetLoader(tf.keras.utils.Sequence): # Allows the class to be u
         return self.images[self.pos_train_inds] # Retrieve the training faces using the training indices
         
         
-    def get_batch(self, batch_size):
-        selected_pos_inds = np.random.choice(self.pos_train_inds, size=batch_size // 2, replace=False, p=self.p_pos) # Ensures an equal number of positive samples in the batch
-        selected_neg_inds = np.random.choice(self.neg_train_inds, size=batch_size // 2, replace=False) # Ensures an equal number of negative samples in the batch
-        selected_inds = np.concatenate((selected_pos_inds, selected_neg_inds)) # concatenates the selected positive and negative indices into a single array
-        
-        sorted_inds = np.sort(selected_inds).flatten() # Sorts the selected indices in ascending order
-        sorted_inds = sorted_inds.astype(int) 
-        train_img = (self.images[sorted_inds] / 255.0).astype(np.float32) # Normalizing the images
-        train_label = (self.labels[sorted_inds]).astype(np.float32)
-        
-        return train_img, train_label
- 
-        
+    def get_batch(self, n, only_faces=False, p_pos=None, p_neg=None, return_inds=False):
+            if only_faces:
+                selected_inds = np.random.choice(self.pos_train_inds, size=n, replace=False, p=p_pos)
+            else:
+                selected_pos_inds = np.random.choice(self.pos_train_inds, size=n//2, replace=False, p=p_pos)
+                selected_neg_inds = np.random.choice(self.neg_train_inds, size=n//2, replace=False, p=p_neg)
+                selected_inds = np.concatenate((selected_pos_inds, selected_neg_inds))
+
+            sorted_inds = np.sort(selected_inds)
+            train_img = (self.images[sorted_inds,:,:,::-1]/255.).astype(np.float32)
+            train_label = self.labels[sorted_inds,...]
+            return (train_img, train_label, sorted_inds) if return_inds else (train_img, train_label)
+    
+            
         
     
     
