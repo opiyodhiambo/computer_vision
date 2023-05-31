@@ -16,8 +16,7 @@ def plot_sample(x, y, vae):
     plt.imshow(recon[idx])
     plt.grid(True)
     
-    plt.show()
-    
+    plt.show()   
 
 
 
