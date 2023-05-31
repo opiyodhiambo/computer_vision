@@ -39,7 +39,7 @@ class PeriodicPlotter:
             elif self.scale == 'semilogy':
                 plt.semilogy(data)
             elif self.scale == 'loglog':
-                plot.loglog(data)
+                plt.loglog(data)
             else: 
                 raise ValueError(f"{self.scale} is not recognized. Please use a recognized one!)")
                 
