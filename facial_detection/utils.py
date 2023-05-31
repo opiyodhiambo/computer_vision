@@ -16,9 +16,7 @@ def plot_sample(x, y, vae):
     plt.imshow(recon[idx])
     plt.grid(True)
     
-    plt.show()   
-
-
+    plt.show()     
 
 # LossHistory: Used to track the  evolution of the loss during training
 class LossHistory: 
