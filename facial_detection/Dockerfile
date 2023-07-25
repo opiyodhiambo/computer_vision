@@ -7,5 +7,4 @@ COPY ./utils.py /app/utils.py
 COPY ./requirements.txt /app/requirements.txt 
 COPY ./facial-detect.py /app/facial-detect.py
 WORKDIR /app
-COPY trained_model.pkl /app/
 CMD ["python", "facial-detect.py"]
