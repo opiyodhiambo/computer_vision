@@ -85,9 +85,9 @@ class PeriodicPlotter:
         )  # Initalizing an empty list that will house the rows of the image grid
         counter = 0  # a counter variable to keep track of the position in the xs list
 
-        for i in range(size[0]):  # Iterating over the desired number of rows
+        for _ in range(size[0]):  # Iterating over the desired number of rows
             row = []  # Initialize an empty list of rows
-            for j in range(size[1]):  # Iterating over the desired number of columns
+            for _ in range(size[1]):  # Iterating over the desired number of columns
                 row.append(
                     xs[counter]
                 )  # Append the image into the current position in the image list to the row list
