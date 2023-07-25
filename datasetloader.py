@@ -8,9 +8,14 @@ import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
-class TrainingDatasetLoader(
-    tf.keras.utils.Sequence
-):  # Allows the class to be used as a data generator for training models
+class TrainingDatasetLoader(tf.keras.utils.Sequence):
+    def __len__(self):
+        pass
+
+    def __getitem__(self, index):
+        pass
+
+    # Allows the class to be used as a data generator for training models
     def __init__(self, data_path, batch_size=20, training=True):
         # Accessing the path to the data
         print(f"Opening {data_path}")
