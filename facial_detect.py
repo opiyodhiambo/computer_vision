@@ -104,9 +104,7 @@ for epoch in range(num_epochs):
 y_pred_standard = tf.round(tf.nn.sigmoid(standard_classifier.predict(batch_x)))
 acc_standard = tf.reduce_mean(tf.cast(tf.equal(batch_y, y_pred_standard), tf.float32))
 
-print(
-    f"Standard CNN accuracy on (potentially biased) training set: {acc_standard.np()}"
-)
+print(f"Standard CNN accuracy on (potentially biased) training set: {acc_standard}")
 
 # Recompile the model with the appropriate optimizer, loss function, and metrics
 standard_classifier.compile(
