@@ -3,7 +3,7 @@ format:
 install:
 	pip install -r requirements.txt
 run: 
-	python facial-detect.py
+	python facial_detect.py
 lint:
 	pylint --disable=R,C,W0212 *.py 
 build: 
