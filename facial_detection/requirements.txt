@@ -1,13 +1,12 @@
 black
 pytest
 pylint
-uvicorn[standard]
 tensorflow
 numpy
-cv2
+opencv-python
 pathlib
 matplotlib
 functools
 tqdm
-glob
+
 
