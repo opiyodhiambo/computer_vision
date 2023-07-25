@@ -7,4 +7,4 @@ COPY ./requirements.txt /app/requirements.txt
 COPY ./facial-detect.py /app/facial_detect.py
 RUN pip install --upgrade -r /app/requirements.txt
 WORKDIR /app
-CMD ["python", "facial-detect.py"]
+CMD ["python", "facial_detect.py"]
