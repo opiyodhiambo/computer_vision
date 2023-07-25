@@ -28,9 +28,7 @@ class TrainingDatasetLoader(tf.keras.utils.Sequence):
         print("Loading data...")
         sys.stdout.flush()
         self.images = self.cache["images"][:10]
-        self.labels = self.cache["labels"][:10].astype(
-            np.float32
-        )  # Convert the labels into float32 type
+        self.labels = self.cache["labels"][:10]  # Convert the labels into float32 type
         self.image_dims = self.images.shape  # Assigning the shape of the loaded images
 
         # Creating the index arrays for the negative and positive samples
