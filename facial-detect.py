@@ -73,13 +73,13 @@ if hasattr(tqdm, "_instances"):
 
 
 @tf.function
-def standard_train_step(x, y):  # Training step
+def standard_train_step(lgt, lbl):  # Training step
     with tf.GradientTape() as tape:
         # Feed the images into the model
-        logits = standard_classifier(x)
+        logits = standard_classifier(lgt)
         # Compute the loss
         loss = tf.nn.sigmoid_cross_entropy_with_logits(
-            labels=y, logits=logits
+            labels=lbl, logits=logits
         )  # Applies a sigmoid activation function and compues the cross-entropy loss between the true labels and the precicted logits
     # Back propagation
     grads = tape.gradient(
