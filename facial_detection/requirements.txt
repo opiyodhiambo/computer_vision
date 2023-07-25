@@ -2,3 +2,12 @@ black
 pytest
 pylint
 uvicorn[standard]
+tensorflow
+numpy
+cv2
+pathlib
+matplotlib
+functools
+tqdm
+glob
+
