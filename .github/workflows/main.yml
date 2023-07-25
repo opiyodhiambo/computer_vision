@@ -21,3 +21,6 @@ jobs:
       - name: run script
         run: |
           make run
+      - name: build container
+        run: |
+          make build
