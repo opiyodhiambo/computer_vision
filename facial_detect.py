@@ -66,6 +66,8 @@ if hasattr(tqdm, "_instances"):
 def standard_train_step(lgt, lbl):  # Training step
     with tf.GradientTape() as tape:
         # Feed the images into the model
+        lgt = tf.cast(lgt, tf.float32)
+        lbl = tf.cast(lbl, tf.float32)
         logits = standard_classifier(lgt)
         # Compute the loss
         lss = tf.nn.sigmoid_cross_entropy_with_logits(
