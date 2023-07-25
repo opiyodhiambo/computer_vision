@@ -11,7 +11,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 class TrainingDatasetLoader(
     tf.keras.utils.Sequence
 ):  # Allows the class to be used as a data generator for training models
-    def __init__(self, data_path, batch_size=200, training=True):
+    def __init__(self, data_path, batch_size=20, training=True):
         # Accessing the path to the data
         print(f"Opening {data_path}")
         sys.stdout.flush()  # Ensures that the message is immediately printed in the console
@@ -22,8 +22,8 @@ class TrainingDatasetLoader(
         # Loading the dataset
         print("Loading data...")
         sys.stdout.flush()
-        self.images = self.cache["images"][:]
-        self.labels = self.cache["labels"][:].astype(
+        self.images = self.cache["images"][:10]
+        self.labels = self.cache["labels"][:10].astype(
             np.float32
         )  # Convert the labels into float32 type
         self.image_dims = self.images.shape  # Assigning the shape of the loaded images
