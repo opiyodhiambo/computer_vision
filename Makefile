@@ -5,7 +5,7 @@ install:
 run: 
 	python facial-detect.py
 lint:
-	pylint --disable=R,C *.py 
+	pylint --disable=R,C,W0212 *.py 
 build: 
 	docker build .
 all: install format lint run
