@@ -1,4 +1,4 @@
-FROM comp_vision/facial-detection:latest
+FROM python:3
 RUN pip install --upgrade -r /app/requirements.txt
 RUN mkdir -p /app
 COPY ./model/ /app/
