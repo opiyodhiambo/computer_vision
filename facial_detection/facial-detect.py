@@ -12,6 +12,7 @@ import glob
 from datasetloader import TrainingDatasetLoader
 import utils
 from utils import LossHistory, PeriodicPlotter
+import pickle
 
 # Data Collection
 path_to_training_data = tf.keras.utils.get_file(
@@ -105,3 +106,10 @@ for epoch in range(num_epochs):
             loss.numpy().mean()
         )  # add the loss values to the loss objects
         plotter.plot(loss_history.get())  # Plotting the evolution of the loss
+
+# Pickling the model
+model_folder = "model"
+model_filename = "facial_detection.pkl"
+model_path = os.path.join(model_folder, model_filename)
+with open(model_path, "wb") as f:
+    pickle.dump(standard_classifier, f)
