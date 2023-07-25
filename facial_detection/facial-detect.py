@@ -18,7 +18,7 @@ import pickle
 path_to_training_data = tf.keras.utils.get_file(
     "train_face.h5", "https://www.dropbox.com/s/hlz8atheyozp1yx/train_face.h5?dl=1"
 )
-batch_size = 200
+batch_size = 8
 loader = TrainingDatasetLoader(path_to_training_data)
 
 # Defining the cnn
@@ -58,7 +58,7 @@ standard_classifier = make_standard_classifier()
 
 # Training the CNN
 # Setting the training hyperparams
-batch_size = 32  # Samples to be processed per iteration
+batch_size = 8  # Samples to be processed per iteration
 num_epochs = 4  #  Number of times the entire dataset will be passed through the model during training
 learning_rate = 0.00004  # The step size at each iteration during optimization process
 train_size = len(loader.pos_train_inds) + len(loader.neg_train_inds)
@@ -108,8 +108,19 @@ for epoch in range(num_epochs):
         plotter.plot(loss_history.get())  # Plotting the evolution of the loss
 
 # Pickling the model
-model_folder = "model"
-model_filename = "facial_detection.pkl"
-model_path = os.path.join(model_folder, model_filename)
-with open(model_path, "wb") as f:
-    pickle.dump(standard_classifier, f)
+(batch_x, batch_y) = loader.get_batch(5)
+y_pred_standard = tf.round(tf.nn.sigmoid(standard_classifier.predict(batch_x)))
+acc_standard = tf.reduce_mean(tf.cast(tf.equal(batch_y, y_pred_standard), tf.float32))
+
+print(
+    f"Standard CNN accuracy on (potentially biased) training set: {acc_standard.numpy()}"
+)
+
+# Recompile the model with the appropriate optimizer, loss function, and metrics
+standard_classifier.compile(
+    optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"]
+)
+
+model_save_path = "model/trained_model.keras"
+# Saving the trained model in the native Keras format
+standard_classifier.save("trained_model.keras")
