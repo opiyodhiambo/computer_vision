@@ -1,18 +1,7 @@
-import tensorflow as tf  # The main deep learning library
-import numpy as np  # For working with arrays
-import os  # For interacting with my operating system
-import cv2  # For processing images
-import pathlib
-import matplotlib.pyplot as plt  # For visualizing the images
 import functools
+import tensorflow as tf  # The main deep learning library
 import tqdm
-
-import sys
-import glob
 from datasetloader import TrainingDatasetLoader
-import utils
-from utils import LossHistory, PeriodicPlotter
-import pickle
 
 # Data Collection
 path_to_training_data = tf.keras.utils.get_file(
@@ -113,7 +102,7 @@ y_pred_standard = tf.round(tf.nn.sigmoid(standard_classifier.predict(batch_x)))
 acc_standard = tf.reduce_mean(tf.cast(tf.equal(batch_y, y_pred_standard), tf.float32))
 
 print(
-    f"Standard CNN accuracy on (potentially biased) training set: {acc_standard.numpy()}"
+    f"Standard CNN accuracy on (potentially biased) training set: {acc_standard.np()}"
 )
 
 # Recompile the model with the appropriate optimizer, loss function, and metrics
