@@ -3,7 +3,7 @@ format:
 install:
 	pip install -r requirements.txt
 run: 
-	python cnn.py
+	python facial-detect.py
 lint:
 	pylint --disable=R,C *.py 
 
