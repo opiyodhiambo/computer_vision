@@ -121,6 +121,7 @@ standard_classifier.compile(
     optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"]
 )
 
-model_save_path = "model/trained_model.keras"
+
 # Saving the trained model in the native Keras format
-standard_classifier.save("trained_model.keras")
+standard_classifier.save("model/trained_model.keras")
+print("Model saved")
