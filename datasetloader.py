@@ -1,7 +1,6 @@
 import h5py
 import numpy as np
 import sys
-import glob
 import tensorflow as tf  # The main deep learning library
 import os
 
